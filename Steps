@@ -1,0 +1,11 @@
+Package Build
+mvn package
+
+Create Bucket
+aws s3 mb s3://myretail-saiket --profile personal
+
+Package SAM
+aws cloudformation package --template-file sam.yaml --output-template-file target/output-sam.yaml --profile personal --s3-bucket myretail-saiket
+
+Depoly with SAM
+aws cloudformation deploy --template-file C:\Users\saiket.tewary\eclipse-workspace\myRetail\target\output-sam.yaml --stack-name saiket-myretail --capabilities CAPABILITY_IAM --profile personal

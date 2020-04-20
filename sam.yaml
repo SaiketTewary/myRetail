@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MyRetils Serverless POC.
+
+Resources:
+  MyRetailLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.saiket.myRetail.LambdaHandler::handleRequest
+      Runtime: java8
+      CodeUri: target/myRetail-1.0.0-SNAPSHOT.jar
+      MemorySize: 1512
+      Policies: 
+         - AWSLambdaBasicExecutionRole
+         - AmazonDynamoDBFullAccess
+      Timeout: 60
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+  ProductsPriceTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: products_price_table
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: N
+        - AttributeName: SK
+          AttributeType: S          
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+Outputs:
+  MyRetailLambdaApi:
+    Description: URL for application
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${ServerlessRestApiProdStage}/MyRetils'
+    Export:
+      Name: MyRetailLambdaApi
