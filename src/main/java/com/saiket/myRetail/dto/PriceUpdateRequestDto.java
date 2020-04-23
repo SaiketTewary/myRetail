@@ -1,6 +1,8 @@
 package com.saiket.myRetail.dto;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,5 +15,10 @@ public class PriceUpdateRequestDto
 	
 	private boolean activate = false;
 	
-	private ProductPriceDto price;
+	@NotBlank(message = "currency_code is mandatory")
+	private String currency_code; 
+	
+	@NotNull(message = "Please provide a price value")
+	@DecimalMin("0.00")
+	private double value;
 }

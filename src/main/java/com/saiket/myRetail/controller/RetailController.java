@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,25 +15,21 @@ import com.saiket.myRetail.dto.PriceRequestDto;
 import com.saiket.myRetail.dto.PriceUpdateRequestDto;
 import com.saiket.myRetail.dto.ProductDto;
 import com.saiket.myRetail.dto.ProductPriceDto;
+import com.saiket.myRetail.exceptions.MyRetailException;
 import com.saiket.myRetail.exceptions.RedskyException;
-import com.saiket.myRetail.repository.DynamoRepo;
 import com.saiket.myRetail.service.ProductPriceService;
 
 
 @RestController
 @RequestMapping("/products")
 public class RetailController 
-{
-
-	@Autowired
-	private DynamoRepo repo;
-	
+{	
 	@Autowired
 	ProductPriceService productPriceService;
 	
 	
     @RequestMapping(path = "/Setup", method = RequestMethod.GET)
-    public String helloRetail() 
+    public String helloRetail() throws MyRetailException 
     {
     	ArrayList<ProductPriceDto> request = new ArrayList<ProductPriceDto>();
     	
@@ -46,16 +41,9 @@ public class RetailController
     	
         return "Hello from Retail! Data Created";
     }  
-    
-    @RequestMapping(path = "/ListTable", method = RequestMethod.GET)
-    public String listTables() 
-    {
-        String names = repo.listTable();
-        return names;
-    }
-        
+           
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<ProductDto> getProductPrice(@PathVariable("id") int productId,@Valid @RequestBody (required=false) PriceRequestDto request) 
+    public ResponseEntity<ProductDto> getProductPrice(@PathVariable("id") int productId,@Valid @RequestBody (required=false) PriceRequestDto request) throws RedskyException, MyRetailException 
     {
     	ProductDto product = null;
 		try 
@@ -65,8 +53,11 @@ public class RetailController
 		} 
 		catch (RedskyException e) 
 		{
-			e.printStackTrace();
-			return (ResponseEntity<ProductDto>) ResponseEntity.notFound();
+			throw new RedskyException("Product Not Found!");
+		}
+		catch (MyRetailException e) 
+		{
+			throw new MyRetailException("Price Not Found!");
 		}
 		
 		return ResponseEntity.ok(product);
@@ -74,12 +65,20 @@ public class RetailController
     }
     
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<String> updatePrice(@PathVariable("id") int productId, @Valid @RequestBody PriceUpdateRequestDto request) 
+    public ResponseEntity<String> updatePrice(@PathVariable("id") int productId, @Valid @RequestBody PriceUpdateRequestDto request) throws MyRetailException 
     {
-    	boolean success = productPriceService.updatePrice(productId, request);
+    	boolean success = false;
+		try 
+		{
+			success = productPriceService.updatePrice(productId, request);
+		} 
+		catch (MyRetailException e) 
+		{
+			throw new MyRetailException("Price Not Found!");
+		}
     	
     	if(!success)
-    		return (ResponseEntity<String>) ResponseEntity.notFound();
+    		throw new MyRetailException("Price Not Found!");
     	
     	return ResponseEntity.ok("Price Updated");
     }

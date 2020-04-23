@@ -3,6 +3,8 @@ package com.saiket.myRetail.repository;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -11,14 +13,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saiket.myRetail.exceptions.RedskyException;
 
 @Repository
-public class RedskyRepo implements IRepository
+public class RedskyRepo
 {
 
     @Value("${external.redsky.url}")
     private String redskyUrl;
     
     private static final String EXCLUDES = "?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics";
-    
+    private static Logger LOGGER = LoggerFactory.getLogger(RedskyRepo.class);
     
     public String getProductTitle(long id) throws RedskyException 
     {
@@ -45,7 +47,8 @@ public class RedskyRepo implements IRepository
         } 
         catch (Exception e) 
         { 
-            throw new RedskyException("product not found");
+        	LOGGER.error(e.getMessage(), e.toString());
+            throw new RedskyException("Product Not Found!");
         }
     }
 }

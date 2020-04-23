@@ -2,15 +2,14 @@ package com.saiket.myRetail.service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.saiket.myRetail.dao.ProductPriceDao;
 import com.saiket.myRetail.dto.PriceRequestDto;
 import com.saiket.myRetail.dto.PriceUpdateRequestDto;
 import com.saiket.myRetail.dto.ProductDto;
 import com.saiket.myRetail.dto.ProductPriceDto;
+import com.saiket.myRetail.exceptions.MyRetailException;
 import com.saiket.myRetail.exceptions.RedskyException;
 import com.saiket.myRetail.repository.DynamoRepo;
 import com.saiket.myRetail.repository.RedskyRepo;
@@ -25,7 +24,7 @@ public class ProductPriceService
 	private RedskyRepo redskyRepo;
 	
 	
-	public ProductDto getPrice (long id, PriceRequestDto requestDto) throws RedskyException
+	public ProductDto getPrice (long id, PriceRequestDto requestDto) throws RedskyException, MyRetailException
 	{
 		String curr = "USD";
 		
@@ -53,23 +52,20 @@ public class ProductPriceService
 		return dto;
 	}
 	
-	public boolean updatePrice (long id, PriceUpdateRequestDto request)
+	public boolean updatePrice (long id, PriceUpdateRequestDto request) throws MyRetailException
 	{
-		if(request.getPrice().getValue() < 0 || request.getPrice().getCurrency_code().isBlank())
-			return false;
-		
 		return repository.updatePrice(id, request);
 	}
 	
 	
-	public void createPrice (long id, ProductPriceDto request)
+	public void createPrice (long id, ProductPriceDto request) throws MyRetailException
 	{
     	ArrayList<ProductPriceDto> dtos = new ArrayList<ProductPriceDto>();
     	dtos.add(request);
     	createPrices(id, dtos, false);
 	}
 	
-	public void createPrices (long id, ArrayList<ProductPriceDto> request, boolean activate)
+	public void createPrices (long id, ArrayList<ProductPriceDto> request, boolean activate) throws MyRetailException
 	{
 		repository.savePrice(id, request, activate);
 	}
