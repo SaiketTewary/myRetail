@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.saiket.myRetail.dto.PriceDto;
 import com.saiket.myRetail.dto.ProductDto;
 
 import lombok.Getter;
@@ -46,5 +47,18 @@ public class ProductPriceDao
     	dao.setCreated(Instant.now().toEpochMilli());
     	
     	return dao;
+    }
+    
+    public PriceDto toPriceDto()
+    {
+    	PriceDto dto = new PriceDto();
+    	dto.setProductId(this.productId);
+    	dto.setPriceId(this.priceId);
+    	dto.setCurrency(this.currency);
+    	dto.setPrice(this.price);
+    	dto.setActive(this.active);
+    	dto.setCreated(this.created);
+    	
+    	return dto;
     }
 }

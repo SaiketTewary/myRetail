@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.saiket.myRetail.dao.ProductPriceDao;
+import com.saiket.myRetail.dto.PriceDto;
 import com.saiket.myRetail.dto.PriceRequestDto;
 import com.saiket.myRetail.dto.PriceUpdateRequestDto;
 import com.saiket.myRetail.dto.ProductDto;
@@ -23,6 +24,22 @@ public class ProductPriceService
 	@Autowired
 	private RedskyRepo redskyRepo;
 	
+	
+	public List<PriceDto> getPrices (long id) throws MyRetailException
+	{
+		List<ProductPriceDao> daos =  repository.getProducPrices(id);
+		List<PriceDto> dtos = new ArrayList<PriceDto>();
+		
+		if(!daos.isEmpty()) 
+		{
+			daos.forEach(dao -> 
+			{
+				dtos.add(dao.toPriceDto());
+			});
+		}
+		
+		return dtos;
+	}
 	
 	public ProductDto getPrice (long id, PriceRequestDto requestDto) throws RedskyException, MyRetailException
 	{

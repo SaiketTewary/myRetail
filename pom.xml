@@ -93,10 +93,10 @@
 
   <profiles>
     <profile>
-      <id>boot</id>
+      <id>dev</id>
       <activation>
         <property>
-          <name>boot</name>
+          <name>dev</name>
         </property>
       </activation>
       <build>

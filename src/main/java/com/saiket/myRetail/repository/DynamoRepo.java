@@ -8,13 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 import com.saiket.myRetail.dao.ProductPriceDao;
 import com.saiket.myRetail.dto.PriceUpdateRequestDto;
 import com.saiket.myRetail.dto.ProductPriceDto;
@@ -23,26 +21,32 @@ import com.saiket.myRetail.exceptions.MyRetailException;
 @Repository
 public class DynamoRepo
 {
-
-	@Autowired
-	private AmazonDynamoDB amazonDynamoDB;
 	@Autowired
 	private DynamoDBMapper dynamoDBMapper;
+	
+	
 	private static Logger LOGGER = LoggerFactory.getLogger(DynamoRepo.class);
 	
-	public String listTable()
+	public List<ProductPriceDao> getProducPrices(long id) throws MyRetailException 
 	{
-	
-		StringBuilder sb = new StringBuilder();
+		ProductPriceDao dao = new ProductPriceDao();
+		dao.setProductId(id);
 		
-        ListTablesResult tables = amazonDynamoDB.listTables();
-        List<String> iterator = tables.getTableNames();
+		try
+		{
+			DynamoDBQueryExpression<ProductPriceDao> queryExpression = new DynamoDBQueryExpression<ProductPriceDao>();
+			
+			queryExpression.withHashKeyValues(dao);
 
-        iterator.forEach(t ->{
-        	sb.append(t);
-        });
-		
-        return sb.toString();
+			List<ProductPriceDao> itemList = dynamoDBMapper.query(ProductPriceDao.class, queryExpression);
+			
+			return itemList;
+		}
+        catch (Exception e) 
+        { 
+        	LOGGER.error(e.getMessage(), e.toString());
+            throw new MyRetailException("Price Not Found!");
+        } 
 	}
 	
 	public List<ProductPriceDao> getCurrentPrice(long id, String curr) throws MyRetailException 
@@ -80,7 +84,6 @@ public class DynamoRepo
         	LOGGER.error(e.getMessage(), e.toString());
             throw new MyRetailException("Price Not Found!");
         } 
-
 	}
 	
 	public List<ProductPriceDao> getPriceDao(long productId, String priceId) throws MyRetailException 

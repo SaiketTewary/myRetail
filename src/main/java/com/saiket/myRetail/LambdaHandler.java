@@ -21,31 +21,12 @@ public class LambdaHandler implements RequestStreamHandler {
     static {
         try {
             handler = SpringBootLambdaContainerHandler.getAwsProxyHandler(MyRetailApplication.class);
-
-            // For applications that take longer than 10 seconds to start, use the async builder:
-            // long startTime = Instant.now().toEpochMilli();
-            // handler = new SpringBootProxyHandlerBuilder()
-            //                    .defaultProxy()
-            //                    .asyncInit(startTime)
-            //                    .springBootApplication(Application.class)
-            //                    .buildAndInitialize();
-
-            // we use the onStartup method of the handler to register our custom filter
-//            handler.onStartup(servletContext -> {
-//                FilterRegistration.Dynamic registration = servletContext.addFilter("CognitoIdentityFilter", CognitoIdentityFilter.class);
-//                registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
-//            });
+//            handler.activateSpringProfiles("prod"); Need to fig this out
         } catch (ContainerInitializationException e) {
-            // if we fail here. We re-throw the exception to force another cold start
             e.printStackTrace();
             throw new RuntimeException("Could not initialize Spring Boot application", e);
         }
     }
-
-//    public LambdaHandler() {
-//        // we enable the timer for debugging. This SHOULD NOT be enabled in production.
-//        Timer.enable();
-//    }
 
     @Override
     public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context)

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
@@ -16,9 +15,7 @@ import com.saiket.myRetail.exceptions.RedskyException;
 public class RedskyRepo
 {
 
-    @Value("${external.redsky.url}")
-    private String redskyUrl;
-    
+    private static final String REDSKY_URL = "https://redsky.target.com/v2/pdp/tcin/";
     private static final String EXCLUDES = "?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics";
     private static Logger LOGGER = LoggerFactory.getLogger(RedskyRepo.class);
     
@@ -27,11 +24,11 @@ public class RedskyRepo
         RestTemplate restTemplate = new RestTemplate();
 
         Map<String, String> uriVariables = new HashMap<>();
-        uriVariables.put("id", id + ""); // cast id to string
+        uriVariables.put("id", id + "");
 
         ObjectMapper mapper = new ObjectMapper();
 
-        String productUrl = redskyUrl + id + EXCLUDES;
+        String productUrl = REDSKY_URL + id + EXCLUDES;
 
         try 
         {
