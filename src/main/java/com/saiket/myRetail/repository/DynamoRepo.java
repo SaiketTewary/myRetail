@@ -85,37 +85,6 @@ public class DynamoRepo
             throw new MyRetailException("Price Not Found!");
         } 
 	}
-//	
-//	public List<ProductPriceDao> getPriceDao(long productId, String priceId) throws MyRetailException 
-//	{
-//		ProductPriceDao dao = new ProductPriceDao();
-//		dao.setProductId(productId);
-//		dao.setPriceId(priceId);
-//		
-//		try
-//		{
-//			
-//			DynamoDBQueryExpression<ProductPriceDao> queryExpression = new DynamoDBQueryExpression<ProductPriceDao>();
-//			
-//				
-//			Map<String, Condition> rangeKeyConditions = new HashMap<>();
-//			rangeKeyConditions.put("SK", new Condition()
-//				                 .withComparisonOperator(ComparisonOperator.EQ)
-//				                 .withAttributeValueList(new AttributeValue().withS(priceId)));
-//				
-//			queryExpression.withHashKeyValues(dao)
-//						.setRangeKeyConditions(rangeKeyConditions);
-//	
-//			List<ProductPriceDao> itemList = dynamoDBMapper.query(ProductPriceDao.class, queryExpression);
-//			
-//			return itemList;
-//		}
-//	    catch (Exception e) 
-//	    { 
-//	    	LOGGER.error(e.getMessage(), e.toString());
-//	        throw new MyRetailException("Price Not Found!");
-//	    } 
-//	}
 	
 	public void savePrice(long id, ArrayList<ProductPriceDto> request, boolean activate) throws MyRetailException 
 	{
