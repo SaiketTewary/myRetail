@@ -27,7 +27,9 @@ Currently Hosted Solution running in AWS in below URL
 	
 	Will return ProductId's created to test out the Service
 	
-- To get a product Price for a specific currency. Default it will return the USD price for the product and if the product id is available in Redsky 
+- To get a product Price for a specific currency. Default it will return the USD price for the product and if the product id is available in Redsky. 
+  If a prodcut id isn't available in Redsky , it will not return price record .
+  Try product ID - 13860428
 	
 	GET /products/{id}
 	
@@ -77,7 +79,7 @@ Currently Hosted Solution running in AWS in below URL
 		}
 	]
 
-- To Update a product Price.
+- To Update a product Price. By Default it will set the new price to be current 
 
 	PUT /products/{id}
 	
@@ -86,7 +88,6 @@ Currently Hosted Solution running in AWS in below URL
 	
 	Request Body :
 	{	
-		String priceId
 		boolean activate
 		String currency_code
 		double value
@@ -95,7 +96,6 @@ Currently Hosted Solution running in AWS in below URL
 	Example :
 	
 	{	
-		"priceId" : "da979638-ffc7-4aa8-aaf4-fce8a9141f2e"
 		"activate" : True
 		"currency_code" : "USD"
 		"value": 25.5
