@@ -85,37 +85,37 @@ public class DynamoRepo
             throw new MyRetailException("Price Not Found!");
         } 
 	}
-	
-	public List<ProductPriceDao> getPriceDao(long productId, String priceId) throws MyRetailException 
-	{
-		ProductPriceDao dao = new ProductPriceDao();
-		dao.setProductId(productId);
-		dao.setPriceId(priceId);
-		
-		try
-		{
-			
-			DynamoDBQueryExpression<ProductPriceDao> queryExpression = new DynamoDBQueryExpression<ProductPriceDao>();
-			
-				
-			Map<String, Condition> rangeKeyConditions = new HashMap<>();
-			rangeKeyConditions.put("SK", new Condition()
-				                 .withComparisonOperator(ComparisonOperator.EQ)
-				                 .withAttributeValueList(new AttributeValue().withS(priceId)));
-				
-			queryExpression.withHashKeyValues(dao)
-						.setRangeKeyConditions(rangeKeyConditions);
-	
-			List<ProductPriceDao> itemList = dynamoDBMapper.query(ProductPriceDao.class, queryExpression);
-			
-			return itemList;
-		}
-	    catch (Exception e) 
-	    { 
-	    	LOGGER.error(e.getMessage(), e.toString());
-	        throw new MyRetailException("Price Not Found!");
-	    } 
-	}
+//	
+//	public List<ProductPriceDao> getPriceDao(long productId, String priceId) throws MyRetailException 
+//	{
+//		ProductPriceDao dao = new ProductPriceDao();
+//		dao.setProductId(productId);
+//		dao.setPriceId(priceId);
+//		
+//		try
+//		{
+//			
+//			DynamoDBQueryExpression<ProductPriceDao> queryExpression = new DynamoDBQueryExpression<ProductPriceDao>();
+//			
+//				
+//			Map<String, Condition> rangeKeyConditions = new HashMap<>();
+//			rangeKeyConditions.put("SK", new Condition()
+//				                 .withComparisonOperator(ComparisonOperator.EQ)
+//				                 .withAttributeValueList(new AttributeValue().withS(priceId)));
+//				
+//			queryExpression.withHashKeyValues(dao)
+//						.setRangeKeyConditions(rangeKeyConditions);
+//	
+//			List<ProductPriceDao> itemList = dynamoDBMapper.query(ProductPriceDao.class, queryExpression);
+//			
+//			return itemList;
+//		}
+//	    catch (Exception e) 
+//	    { 
+//	    	LOGGER.error(e.getMessage(), e.toString());
+//	        throw new MyRetailException("Price Not Found!");
+//	    } 
+//	}
 	
 	public void savePrice(long id, ArrayList<ProductPriceDto> request, boolean activate) throws MyRetailException 
 	{
@@ -143,28 +143,23 @@ public class DynamoRepo
 	
 	public boolean updatePrice(long id, PriceUpdateRequestDto request) throws MyRetailException
 	{
-		List<ProductPriceDao> daos =  getPriceDao(id, request.getPriceId());
-		if(daos.isEmpty())
-			return false;
-		
+		ArrayList<ProductPriceDao> daos =  new ArrayList<ProductPriceDao>();
+
 		try
 		{
-			daos.forEach(dao -> {
-				dao.setCurrency(request.getCurrency_code().toUpperCase());
-				dao.setPrice(request.getValue());
-				dao.setActive(request.isActivate());
-			});
-			
+			ProductPriceDao newPriceDao = new ProductPriceDao(id);
+			newPriceDao.setActive(request.isActivate());
+			newPriceDao.setCurrency(request.getCurrency_code());
+			newPriceDao.setPrice(request.getValue());
+			daos.add(newPriceDao);
+
+			// Deactivate previous prices if the new price need to be current 
 			if(request.isActivate())
 			{
 				List<ProductPriceDao> activeDaos =  getCurrentPrice(id, request.getCurrency_code());
 				activeDaos.forEach(dao -> {
-					
-					if(!dao.getPriceId().equals(request.getPriceId()))
-					{
 						dao.setActive(false);
 						daos.add(dao);
-					}
 				});
 			}
 			

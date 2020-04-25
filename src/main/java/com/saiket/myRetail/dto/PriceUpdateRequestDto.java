@@ -9,11 +9,8 @@ import lombok.Setter;
 
 @Getter @Setter
 public class PriceUpdateRequestDto 
-{	
-	@NotBlank(message = "priceId is mandatory")
-	private String priceId;
-	
-	private boolean activate = false;
+{		
+	private boolean activate = true;
 	
 	@NotBlank(message = "currency_code is mandatory")
 	private String currency_code; 
